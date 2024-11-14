@@ -7,4 +7,5 @@
     <string name="reel2">Carrete 2</string>
     <string name="reel3">Carrete 3</string>
     <string name="spin">Girar</string>
+    <string name="background_image">Imagen</string>
 </resources>
