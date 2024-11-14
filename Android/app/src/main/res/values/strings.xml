@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Producto 1</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="reel1">Carrete 1</string>
+    <string name="reel2">Carrete 2</string>
+    <string name="reel3">Carrete 3</string>
+    <string name="spin">Girar</string>
+</resources>
