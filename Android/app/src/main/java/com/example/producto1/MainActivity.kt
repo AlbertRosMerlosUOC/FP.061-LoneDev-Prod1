@@ -1,85 +1,128 @@
 package com.example.producto1
 
+import android.R
+import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.example.producto1.databinding.ActivityMainBinding
-import kotlin.random.Random
+import com.example.producto1.model.Player
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private val symbols = listOf(
-        R.drawable.ic_reels_0,
-        R.drawable.ic_reels_1,
-        R.drawable.ic_reels_2,
-        R.drawable.ic_reels_3,
-        R.drawable.ic_reels_4,
-        R.drawable.ic_reels_5,
-        R.drawable.ic_reels_6
-    )
-    private var coins = 100
+    private lateinit var database: AppDatabase
+    private var jugadores: List<Player> = emptyList()
+    private var jugadorActual: Player? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Configura el balance inicial de monedas
-        binding.coinsTextView.text = "Monedas: $coins"
+        // Inicializar base de datos
+        database = AppDatabase.getInstance(this)
 
-        // Botón de "Girar"
-        binding.spinButton.setOnClickListener {
-            spinReels()
+        // Configurar acciones iniciales
+        cargarJugadores()
+
+        binding.botonAddPlayer.setOnClickListener {
+            mostrarDialogoAñadirJugador()
         }
     }
 
-    private fun spinReels() {
-        val spinDuration = 2000L // Duración del giro
-        val delay = 50L // Tiempo entre cada cambio de imagen
-
-        val handler = Handler(Looper.getMainLooper())
-        val startTime = System.currentTimeMillis()
-
-        handler.post(object : Runnable {
-            override fun run() {
-                val elapsedTime = System.currentTimeMillis() - startTime
-
-                // Generar símbolos aleatorios para cada carrete
-                val symbol1 = symbols[Random.nextInt(symbols.size)]
-                val symbol2 = symbols[Random.nextInt(symbols.size)]
-                val symbol3 = symbols[Random.nextInt(symbols.size)]
-
-                // Actualizar imágenes de los carretes
-                binding.reel1.setImageResource(symbol1)
-                binding.reel2.setImageResource(symbol2)
-                binding.reel3.setImageResource(symbol3)
-
-                // Continuar cambiando las imágenes hasta que se complete la duración del giro
-                if (elapsedTime < spinDuration) {
-                    handler.postDelayed(this, delay)
-                } else {
-                    // Verifica si el jugador ganó y actualiza las monedas
-                    checkWin(symbol1, symbol2, symbol3)
-                }
+    private fun cargarJugadores() {
+        // Ejecutar la operación en un hilo secundario
+        lifecycleScope.launch {
+            jugadores = withContext(Dispatchers.IO) {
+                database.playerDao().getAllPlayers()
             }
-        })
+
+            configurarSpinner()
+        }
     }
 
-    private fun checkWin(symbol1: Int, symbol2: Int, symbol3: Int) {
-        if (symbol1 == symbol2 && symbol2 == symbol3) {
-            // Jugador gana: sumar 100 monedas
-            coins += 100
-            binding.coinsTextView.text = "Monedas: $coins"
-        } else {
-            // Restar monedas si el balance es mayor a 10
-            if (coins >= 10) {
-                coins -= 10
-                binding.coinsTextView.text = "Monedas: $coins"
+    private fun configurarSpinner() {
+        // Convertir lista de jugadores a nombres
+        val nombres = jugadores.map { it.name }
+
+        // Configurar Spinner con los nombres
+        val adapter = ArrayAdapter(this, R.layout.simple_spinner_item, nombres)
+        adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+        binding.spinner.adapter = adapter
+
+        // Configurar selección de jugadores
+        binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                jugadorActual = jugadores[position]
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // No hacer nada si no se selecciona un jugador
+            }
+        }
+
+        binding.botonIniciarJuego.setOnClickListener {
+            if (jugadorActual != null) {
+                navegarPantallaJuego()
             } else {
-                binding.coinsTextView.text = "Monedas: $coins (Insuficiente)"
+                Toast.makeText(this, "Selecciona un jugador primero", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun mostrarDialogoAñadirJugador() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Añadir Jugador")
+
+        val input = android.widget.EditText(this)
+        input.hint = "Nombre del jugador"
+        builder.setView(input)
+
+        builder.setPositiveButton("Añadir") { _, _ ->
+            val nombre = input.text.toString().trim()
+            if (nombre.isNotEmpty()) {
+                lifecycleScope.launch {
+                    val jugadorExistente = withContext(Dispatchers.IO) {
+                        database.playerDao().findPlayerByName(nombre)
+                    }
+
+                    if (jugadorExistente == null) {
+                        val nuevoJugador = Player(name = nombre, coins = 100)
+                        withContext(Dispatchers.IO) {
+                            database.playerDao().insertPlayer(nuevoJugador)
+                        }
+                        cargarJugadores() // Recargar jugadores
+                        Toast.makeText(this@MainActivity, "Jugador añadido", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this@MainActivity, "El jugador ya existe", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } else {
+                Toast.makeText(this, "El nombre no puede estar vacío", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        builder.setNegativeButton("Cancelar", null)
+        builder.show()
+    }
+
+    private fun navegarPantallaJuego() {
+        val intent = Intent(this, GameActivity::class.java)
+        intent.putExtra("jugadorId", jugadorActual?.id)
+        startActivity(intent)
     }
 }

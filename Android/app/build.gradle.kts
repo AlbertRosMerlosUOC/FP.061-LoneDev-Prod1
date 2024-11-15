@@ -50,8 +50,12 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
 
     // Room
-    implementation("androidx.room:room-runtime:2.4.2")
-    kapt("androidx.room:room-compiler:2.4.2")
+
+    implementation ("androidx.room:room-runtime:2.5.0")
+    implementation ("androidx.room:room-ktx:2.5.0")
+    kapt ("androidx.room:room-compiler:2.5.0")
+
+    implementation(libs.androidx.recyclerview)
     implementation("androidx.room:room-rxjava2:2.4.2")
 
     // RxJava
@@ -61,4 +65,9 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    implementation("androidx.recyclerview:recyclerview:1.3.0")
+    implementation ("androidx.room:room-ktx:2.5.0")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
+
 }
