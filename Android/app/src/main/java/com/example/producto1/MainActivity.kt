@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // Configura el balance inicial de monedas
-        binding.coinsTextView.text = "Balance: $coins"
+        binding.coinsTextView.text = "Monedas: $coins"
 
         // Botón de "Girar"
         binding.spinButton.setOnClickListener {
@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun spinReels() {
         val spinDuration = 2000L // Duración del giro
-        val delay = 100L // Tiempo entre cada cambio de imagen
+        val delay = 50L // Tiempo entre cada cambio de imagen
 
         val handler = Handler(Looper.getMainLooper())
         val startTime = System.currentTimeMillis()
@@ -71,14 +71,14 @@ class MainActivity : AppCompatActivity() {
         if (symbol1 == symbol2 && symbol2 == symbol3) {
             // Jugador gana: sumar 100 monedas
             coins += 100
-            binding.coinsTextView.text = "Balance: $coins"
+            binding.coinsTextView.text = "Monedas: $coins"
         } else {
             // Restar monedas si el balance es mayor a 10
             if (coins >= 10) {
                 coins -= 10
-                binding.coinsTextView.text = "Balance: $coins"
+                binding.coinsTextView.text = "Monedas: $coins"
             } else {
-                binding.coinsTextView.text = "Balance: $coins (Insuficiente)"
+                binding.coinsTextView.text = "Monedas: $coins (Insuficiente)"
             }
         }
     }

@@ -7,7 +7,9 @@ import androidx.room.PrimaryKey
 data class GameResult(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val playerId: Int,
-    val betAmount: Int,
-    val winAmount: Int,
+    val loot: Int,
+    val result1: String,
+    val result2: String,
+    val result3: String,
     val date: String
 )
