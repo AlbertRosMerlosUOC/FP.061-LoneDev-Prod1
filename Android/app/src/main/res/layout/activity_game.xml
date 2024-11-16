@@ -7,87 +7,130 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/ic_background"
-        android:scaleType="centerCrop"
         android:alpha="0.75"
-        android:contentDescription="@string/background_image" />
+        android:contentDescription="@string/background_image"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_background" />
 
-    <!-- Contenido principal -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:gravity="center"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/exo_2_bold"
+            android:shadowColor="#ffffff"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="10"
+            android:text="@string/lonedev"
+            android:textColor="#8A2BE2"
+            android:textSize="48sp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/exo_2_bold"
+            android:shadowColor="#ffffff"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="10"
+            android:text="@string/app_name"
+            android:textColor="#8A2BE2"
+            android:textSize="28sp"
+            android:textStyle="italic"
+            android:layout_marginBottom="48dp" />
 
         <TextView
             android:id="@+id/coinsTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:fontFamily="@font/exo_2_bold"
+            android:shadowColor="#000000"
+            android:shadowDx="0"
+            android:shadowDy="1"
+            android:shadowRadius="4"
             android:text="Monedas: 100"
-            android:textSize="20sp"
-            android:layout_marginBottom="16dp" />
+            android:textColor="#FFD700"
+            android:textSize="24sp" />
 
         <!-- Máquina tragamonedas -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:orientation="horizontal"
-            android:gravity="center">
+            android:layout_marginBottom="12dp">
 
+            <!-- Reel 1 -->
             <ImageView
                 android:id="@+id/reel1"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_margin="8dp"
-                android:background="@drawable/ic_dashboard_black_24dp" />
+                android:background="@drawable/reel_border"
+                android:padding="4dp"
+                android:elevation="2dp" />
 
+            <!-- Reel 2 -->
             <ImageView
                 android:id="@+id/reel2"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_margin="8dp"
-                android:background="@drawable/ic_dashboard_black_24dp" />
+                android:background="@drawable/reel_border"
+                android:padding="4dp"
+                android:elevation="2dp" />
 
+            <!-- Reel 3 -->
             <ImageView
                 android:id="@+id/reel3"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_margin="8dp"
-                android:background="@drawable/ic_dashboard_black_24dp" />
+                android:background="@drawable/reel_border"
+                android:padding="4dp"
+                android:elevation="2dp" />
         </LinearLayout>
 
         <Button
             android:id="@+id/spinButton"
-            android:layout_width="wrap_content"
+            android:layout_width="180sp"
             android:layout_height="wrap_content"
-            android:text="Girar"
-            android:layout_marginTop="24dp"
-            android:padding="12dp"
-            android:backgroundTint="@color/purple_700"
-            android:textColor="@android:color/white" />
+            android:paddingHorizontal="32dp"
+            android:text="@string/girar"
+            android:textSize="14sp"
+            android:textColor="#ffffff"
+            android:backgroundTint="#FF7518"
+            android:fontFamily="@font/exo_2_bold"
+            android:elevation="4dp" />
 
         <!-- Opciones adicionales -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_marginTop="24dp"
             android:gravity="center"
-            android:layout_marginTop="24dp">
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/changeUserButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Cambiar Usuario"
-                android:layout_marginEnd="16dp" />
+                android:layout_marginEnd="16dp"
+                android:text="Cambiar Usuario" />
 
             <Button
                 android:id="@+id/leaderboardButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Clasificación"
-                android:layout_marginEnd="16dp" />
+                android:layout_marginEnd="16dp"
+                android:text="Clasificación" />
 
             <Button
                 android:id="@+id/historyButton"

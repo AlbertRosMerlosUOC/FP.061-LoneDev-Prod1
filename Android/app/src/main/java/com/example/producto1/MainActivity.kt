@@ -86,13 +86,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun mostrarDialogoAñadirJugador() {
         val builder = AlertDialog.Builder(this)
-        builder.setTitle("Añadir Jugador")
+        builder.setTitle("Crear nuevo jugador")
 
         val input = android.widget.EditText(this)
         input.hint = "Nombre del jugador"
         builder.setView(input)
 
-        builder.setPositiveButton("Añadir") { _, _ ->
+        builder.setPositiveButton("Crear") { _, _ ->
             val nombre = input.text.toString().trim()
             if (nombre.isNotEmpty()) {
                 lifecycleScope.launch {
@@ -106,7 +106,7 @@ class MainActivity : AppCompatActivity() {
                             database.playerDao().insertPlayer(nuevoJugador)
                         }
                         cargarJugadores() // Recargar jugadores
-                        Toast.makeText(this@MainActivity, "Jugador añadido", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@MainActivity, "Jugador creado", Toast.LENGTH_SHORT).show()
                     } else {
                         Toast.makeText(this@MainActivity, "El jugador ya existe", Toast.LENGTH_SHORT).show()
                     }

@@ -27,19 +27,25 @@ class GameActivity : AppCompatActivity() {
         R.drawable.ic_reels_5,
         R.drawable.ic_reels_6
     )
+    private val symbolNames = listOf(
+        "s0",
+        "s1",
+        "s2",
+        "s3",
+        "s4",
+        "s5",
+        "s6"
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityGameBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Inicializar base de datos
         database = AppDatabase.getInstance(this)
 
-        // Obtener jugador actual
         val jugadorId = intent.getIntExtra("jugadorId", -1)
 
-        // Realizar la consulta en un hilo de fondo para evitar bloquear el hilo principal
         lifecycleScope.launch {
             jugadorActual = withContext(Dispatchers.IO) {
                 database.playerDao().getAllPlayers().find { it.id == jugadorId }
@@ -48,7 +54,6 @@ class GameActivity : AppCompatActivity() {
             if (jugadorActual != null) {
                 actualizarMonedas()
             } else {
-                // Si el jugador no se encuentra, finalizar la actividad
                 finish()
             }
         }
@@ -100,21 +105,41 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun checkWin(symbol1: Int, symbol2: Int, symbol3: Int) {
-        // Actualiza las monedas dependiendo de si se ganó o se perdió
-        if (symbol1 == symbol2 && symbol2 == symbol3) {
+        val symbol1Index = symbols.indexOf(symbol1)
+        val symbol2Index = symbols.indexOf(symbol2)
+        val symbol3Index = symbols.indexOf(symbol3)
+
+        val symbol1Name = if (symbol1Index != -1) symbolNames[symbol1Index] else "-1"
+        val symbol2Name = if (symbol2Index != -1) symbolNames[symbol2Index] else "-1"
+        val symbol3Name = if (symbol3Index != -1) symbolNames[symbol3Index] else "-1"
+
+        if (symbol1Name == "s0" && symbol2Name == "s0" && symbol3Name == "s0") {
+            jugadorActual?.coins = jugadorActual?.coins?.plus(500) ?: 0
+        }
+        else if (symbol1Name == "s6" && symbol2Name == "s6" && symbol3Name == "s6") {
+            jugadorActual?.coins = jugadorActual?.coins?.minus(100)?.coerceAtLeast(0) ?: 0
+        }
+        else if (symbol1Name == symbol2Name && symbol2Name == symbol3Name && symbol1Name != "s0" && symbol1Name != "s6") {
             jugadorActual?.coins = jugadorActual?.coins?.plus(100) ?: 0
-        } else {
+        }
+        else if ((symbol1Name == symbol2Name && symbol1Name != "s6" && symbol2Name != "s6") ||
+            (symbol2Name == symbol3Name && symbol2Name != "s6" && symbol3Name != "s6") ||
+            (symbol1Name == symbol3Name && symbol1Name != "s6" && symbol3Name != "s6")) {
+            jugadorActual?.coins = jugadorActual?.coins?.plus(20) ?: 0
+        }
+        else {
             jugadorActual?.coins = jugadorActual?.coins?.minus(10)?.coerceAtLeast(0) ?: 0
         }
 
-        // Actualizar las monedas en la base de datos en segundo plano
-        lifecycleScope.launch {
-            withContext(Dispatchers.IO) {
-                // Asegúrate de que la base de datos sea actualizada en el hilo de fondo
-                jugadorActual?.let { database.playerDao().updatePlayer(it) }
+        if (jugadorActual?.coins == 0) {
+            showDeletePlayerDialog()
+        } else {
+            lifecycleScope.launch {
+                withContext(Dispatchers.IO) {
+                    jugadorActual?.let { database.playerDao().updatePlayer(it) }
+                }
+                actualizarMonedas()
             }
-            // Actualizar la interfaz en el hilo principal
-            actualizarMonedas()
         }
     }
 
@@ -122,5 +147,29 @@ class GameActivity : AppCompatActivity() {
         jugadorActual?.let {
             binding.coinsTextView.text = "Monedas: ${it.coins}"
         }
+    }
+
+    private fun showDeletePlayerDialog() {
+        val dialog = android.app.AlertDialog.Builder(this)
+            .setTitle("Game Over")
+            .setMessage("Tus monedas han llegado a 0. El jugador será eliminado.")
+            .setPositiveButton("Seguir") { dialog, _ ->
+                lifecycleScope.launch {
+                    withContext(Dispatchers.IO) {
+                        jugadorActual?.let {
+                            if (it.id != 0) {
+                                database.playerDao().deletePlayer(it)
+                            }
+                        }
+                    }
+                    val intent = Intent(applicationContext, MainActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                }
+                dialog.dismiss()
+            }
+            .create()
+
+        dialog.show()
     }
 }
