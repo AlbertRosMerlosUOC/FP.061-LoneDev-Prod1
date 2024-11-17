@@ -14,5 +14,8 @@
     <string name="jugador">Jugador</string>
     <string name="jugar">Jugar</string>
     <string name="crear">Crear</string>
+    <string name="leaderboard">Clasificación</string>
+    <string name="history">Historial</string>
     <string name="seleccion_jugador">Selección de jugador</string>
+    <string name="cambio_jugador">Cambiar de jugador</string>
 </resources>

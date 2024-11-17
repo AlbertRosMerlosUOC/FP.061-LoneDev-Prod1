@@ -1,5 +1,6 @@
 package com.example.producto1
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -20,7 +21,7 @@ class GameActivity : AppCompatActivity() {
     private var jugadorActual: Player? = null
     private val symbols = listOf(
         R.drawable.ic_reels_0,
-        R.drawable.ic_reels_1,
+        //R.drawable.ic_reels_1,
         R.drawable.ic_reels_2,
         R.drawable.ic_reels_3,
         R.drawable.ic_reels_4,
@@ -29,7 +30,7 @@ class GameActivity : AppCompatActivity() {
     )
     private val symbolNames = listOf(
         "s0",
-        "s1",
+        //"s1",
         "s2",
         "s3",
         "s4",
@@ -115,20 +116,25 @@ class GameActivity : AppCompatActivity() {
 
         if (symbol1Name == "s0" && symbol2Name == "s0" && symbol3Name == "s0") {
             jugadorActual?.coins = jugadorActual?.coins?.plus(500) ?: 0
+            actualizarTextoResultado(5, "¡Jack-o-Win! Has ganado 500 monedas")
         }
         else if (symbol1Name == "s6" && symbol2Name == "s6" && symbol3Name == "s6") {
             jugadorActual?.coins = jugadorActual?.coins?.minus(100)?.coerceAtLeast(0) ?: 0
+            actualizarTextoResultado(1, "¡La muerte! Has perdido 100 monedas")
         }
         else if (symbol1Name == symbol2Name && symbol2Name == symbol3Name && symbol1Name != "s0" && symbol1Name != "s6") {
             jugadorActual?.coins = jugadorActual?.coins?.plus(100) ?: 0
+            actualizarTextoResultado(4, "¡Bingo! Has ganado 100 monedas")
         }
         else if ((symbol1Name == symbol2Name && symbol1Name != "s6" && symbol2Name != "s6") ||
             (symbol2Name == symbol3Name && symbol2Name != "s6" && symbol3Name != "s6") ||
             (symbol1Name == symbol3Name && symbol1Name != "s6" && symbol3Name != "s6")) {
             jugadorActual?.coins = jugadorActual?.coins?.plus(20) ?: 0
+            actualizarTextoResultado(3, "¡Not bad! Has ganado 20 monedas")
         }
         else {
             jugadorActual?.coins = jugadorActual?.coins?.minus(10)?.coerceAtLeast(0) ?: 0
+            actualizarTextoResultado(2, "¡Inténtalo de nuevo!")
         }
 
         if (jugadorActual?.coins == 0) {
@@ -146,6 +152,16 @@ class GameActivity : AppCompatActivity() {
     private fun actualizarMonedas() {
         jugadorActual?.let {
             binding.coinsTextView.text = "Monedas: ${it.coins}"
+        }
+    }
+
+    @SuppressLint("DiscouragedApi")
+    private fun actualizarTextoResultado(resultado: Int, texto: String) {
+        jugadorActual?.let {
+            val colorResourceName = "result_$resultado"
+            val colorResId = resources.getIdentifier(colorResourceName, "color", packageName)
+            binding.resultadoTextView.setTextColor(resources.getColor(colorResId, theme))
+            binding.resultadoTextView.text = texto
         }
     }
 
