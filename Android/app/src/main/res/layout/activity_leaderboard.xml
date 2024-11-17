@@ -49,23 +49,27 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Clasificación de jugadores"
-        android:textSize="24sp"
+        android:layout_marginBottom="16dp"
         android:gravity="center"
-        android:paddingBottom="6dp"
-        android:fontFamily="@font/exo_2_bold"/>
+        android:fontFamily="@font/exo_2_bold"
+        android:shadowColor="#000000"
+        android:shadowDx="0"
+        android:shadowDy="1"
+        android:shadowRadius="4"
+        android:textColor="#FFD700"
+        android:textSize="24sp"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="360dp"
+            android:layout_width="285dp"
+            android:layout_height="375dp"
             android:scrollbars="vertical" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp"
-            android:gravity="center">
+            android:gravity="center"
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -76,39 +80,39 @@
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/gameButton"
+                    android:id="@+id/botonIniciarJuego"
                     android:layout_width="150sp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
-                    android:text="@string/jugar"
-                    android:textSize="14sp"
-                    android:textColor="#ffffff"
                     android:backgroundTint="#FF7518"
+                    android:elevation="10dp"
                     android:fontFamily="@font/exo_2_bold"
-                    android:elevation="10dp" />
+                    android:text="@string/jugar"
+                    android:textColor="#ffffff"
+                    android:textSize="14sp" />
 
                 <Button
                     android:id="@+id/historyButton"
                     android:layout_width="150sp"
                     android:layout_height="wrap_content"
-                    android:text="@string/history"
-                    android:textSize="14sp"
-                    android:textColor="#ffffff"
                     android:backgroundTint="#4B0082"
+                    android:elevation="10dp"
                     android:fontFamily="@font/exo_2_bold"
-                    android:elevation="10dp" />
+                    android:text="@string/history"
+                    android:textColor="#ffffff"
+                    android:textSize="14sp" />
             </LinearLayout>
 
             <Button
                 android:id="@+id/changeUserButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/cambio_jugador"
-                android:textSize="14sp"
-                android:textColor="#ffffff"
                 android:backgroundTint="#4B0082"
+                android:elevation="10dp"
                 android:fontFamily="@font/exo_2_bold"
-                android:elevation="10dp" />
+                android:text="@string/cambio_jugador"
+                android:textColor="#ffffff"
+                android:textSize="14sp" />
         </LinearLayout>
     </LinearLayout>
 </FrameLayout>

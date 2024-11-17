@@ -12,9 +12,15 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="Nombre del Jugador"
+        android:text="Jugador"
         android:textSize="18sp"
-        android:paddingEnd="8dp"/>
+        android:paddingEnd="8dp"
+        android:fontFamily="@font/exo_2_bold"
+        android:shadowColor="#FFFFFF"
+        android:shadowDx="0"
+        android:shadowDy="1"
+        android:shadowRadius="4"
+        android:textColor="#000000"/>
 
     <TextView
         android:id="@+id/monedasTextView"
@@ -23,5 +29,10 @@
         android:text="Monedas"
         android:textSize="18sp"
         android:gravity="end"
-        android:textStyle="bold"/>
+        android:fontFamily="@font/exo_2_bold"
+        android:shadowColor="#FFFFFF"
+        android:shadowDx="0"
+        android:shadowDy="1"
+        android:shadowRadius="4"
+        android:textColor="#000000"/>
 </LinearLayout>

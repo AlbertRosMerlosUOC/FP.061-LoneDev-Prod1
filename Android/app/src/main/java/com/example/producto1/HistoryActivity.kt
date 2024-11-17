@@ -1,6 +1,8 @@
 package com.example.producto1
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.producto1.databinding.ActivityHistoryBinding
@@ -22,40 +24,61 @@ class HistoryActivity : AppCompatActivity() {
         binding = ActivityHistoryBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Inicializar base de datos
         database = AppDatabase.getInstance(this)
 
-        // Obtener jugador actual desde el Intent
         val jugadorId = intent.getIntExtra("jugadorId", -1)
 
-        // Consultar el historial de partidas en un hilo de fondo
         lifecycleScope.launch {
-            // Obtener el jugador y su historial de partidas en un hilo de fondo
             jugadorActual = withContext(Dispatchers.IO) {
                 database.playerDao().getAllPlayers().find { it.id == jugadorId }
             }
-
-            // Si el jugador existe, obtener el historial de partidas
             if (jugadorActual != null) {
-                // Obtener historial de partidas
                 gameResultList = withContext(Dispatchers.IO) {
                     database.gameResultDao().getHistoryByPlayer(jugadorId)
                 }
-
-                // Actualizar la UI con el historial de partidas
                 actualizarHistorial()
             } else {
-                // Si no se encuentra el jugador, finalizar la actividad
                 finish()
             }
         }
 
-        // Aquí puedes añadir otras interacciones con la UI, como navegar a otras actividades.
+        binding.botonIniciarJuego.setOnClickListener {
+            if (jugadorActual != null) {
+                navegarPantallaJuego()
+            } else {
+                Toast.makeText(this, "Selecciona un jugador primero", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        binding.leaderboardButton.setOnClickListener {
+            navegarPantallaLeaderboard()
+        }
+
+        binding.changeUserButton.setOnClickListener {
+            navegarPantallaInicio()
+        }
+
     }
 
     private fun actualizarHistorial() {
-        // Actualizar el RecyclerView o cualquier componente de la UI con el historial de partidas
         val adapter = HistoryAdapter(gameResultList)
         binding.recyclerView.adapter = adapter
+    }
+
+    private fun navegarPantallaJuego() {
+        val intent = Intent(this, GameActivity::class.java)
+        intent.putExtra("jugadorId", jugadorActual?.id)
+        startActivity(intent)
+    }
+
+    private fun navegarPantallaLeaderboard() {
+        val intent = Intent(this, LeaderboardActivity::class.java)
+        intent.putExtra("jugadorId", jugadorActual?.id)
+        startActivity(intent)
+    }
+
+    private fun navegarPantallaInicio() {
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
     }
 }

@@ -28,38 +28,31 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Inicializar base de datos
         database = AppDatabase.getInstance(this)
 
-        // Configurar acciones iniciales
         cargarJugadores()
 
         binding.botonAddPlayer.setOnClickListener {
-            mostrarDialogoAñadirJugador()
+            mostrarDialogoAnadirJugador()
         }
     }
 
     private fun cargarJugadores() {
-        // Ejecutar la operación en un hilo secundario
         lifecycleScope.launch {
             jugadores = withContext(Dispatchers.IO) {
                 database.playerDao().getAllPlayers()
             }
-
             configurarSpinner()
         }
     }
 
     private fun configurarSpinner() {
-        // Convertir lista de jugadores a nombres
         val nombres = jugadores.map { it.name }
 
-        // Configurar Spinner con los nombres
         val adapter = ArrayAdapter(this, R.layout.simple_spinner_item, nombres)
         adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
         binding.spinner.adapter = adapter
 
-        // Configurar selección de jugadores
         binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
@@ -71,7 +64,6 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                // No hacer nada si no se selecciona un jugador
             }
         }
 
@@ -84,7 +76,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun mostrarDialogoAñadirJugador() {
+    private fun mostrarDialogoAnadirJugador() {
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Crear nuevo jugador")
 

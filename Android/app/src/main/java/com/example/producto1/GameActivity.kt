@@ -69,6 +69,7 @@ class GameActivity : AppCompatActivity() {
 
         binding.leaderboardButton.setOnClickListener {
             val intent = Intent(this, LeaderboardActivity::class.java)
+            intent.putExtra("jugadorId", jugadorActual?.id)
             startActivity(intent)
         }
 
@@ -100,6 +101,7 @@ class GameActivity : AppCompatActivity() {
                     handler.postDelayed(this, delay)
                 } else {
                     checkWin(symbol1, symbol2, symbol3)
+                    // TODO Dejar registro de la partida en GameResult
                 }
             }
         })
@@ -124,13 +126,13 @@ class GameActivity : AppCompatActivity() {
         }
         else if (symbol1Name == symbol2Name && symbol2Name == symbol3Name && symbol1Name != "s0" && symbol1Name != "s6") {
             jugadorActual?.coins = jugadorActual?.coins?.plus(100) ?: 0
-            actualizarTextoResultado(4, "¡Bingo! Has ganado 100 monedas")
+            actualizarTextoResultado(4, "¡Triple! Has ganado 100 monedas")
         }
         else if ((symbol1Name == symbol2Name && symbol1Name != "s6" && symbol2Name != "s6") ||
             (symbol2Name == symbol3Name && symbol2Name != "s6" && symbol3Name != "s6") ||
             (symbol1Name == symbol3Name && symbol1Name != "s6" && symbol3Name != "s6")) {
             jugadorActual?.coins = jugadorActual?.coins?.plus(20) ?: 0
-            actualizarTextoResultado(3, "¡Not bad! Has ganado 20 monedas")
+            actualizarTextoResultado(3, "¡Doble! Has ganado 20 monedas")
         }
         else {
             jugadorActual?.coins = jugadorActual?.coins?.minus(10)?.coerceAtLeast(0) ?: 0

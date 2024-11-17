@@ -21,7 +21,7 @@ class LeaderboardAdapter(private val jugadores: List<Player>) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val jugador = jugadores[position]
         holder.binding.nombreTextView.text = jugador.name
-        holder.binding.monedasTextView.text = "${jugador.coins} monedas"
+        holder.binding.monedasTextView.text = "${jugador.coins}"
     }
 
     override fun getItemCount(): Int = jugadores.size
