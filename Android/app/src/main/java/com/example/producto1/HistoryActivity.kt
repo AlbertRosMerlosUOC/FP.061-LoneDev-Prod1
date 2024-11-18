@@ -5,9 +5,11 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.producto1.databinding.ActivityHistoryBinding
 import com.example.producto1.model.Player
 import com.example.producto1.model.GameResult
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -28,6 +30,9 @@ class HistoryActivity : AppCompatActivity() {
 
         val jugadorId = intent.getIntExtra("jugadorId", -1)
 
+        // Configura un LayoutManager para el RecyclerView
+        binding.recyclerView.layoutManager = LinearLayoutManager(this)
+
         lifecycleScope.launch {
             jugadorActual = withContext(Dispatchers.IO) {
                 database.playerDao().getAllPlayers().find { it.id == jugadorId }
@@ -36,7 +41,7 @@ class HistoryActivity : AppCompatActivity() {
                 gameResultList = withContext(Dispatchers.IO) {
                     database.gameResultDao().getHistoryByPlayer(jugadorId)
                 }
-                actualizarHistorial()
+                actualizarHistorial(gameResultList)
             } else {
                 finish()
             }
@@ -57,13 +62,16 @@ class HistoryActivity : AppCompatActivity() {
         binding.changeUserButton.setOnClickListener {
             navegarPantallaInicio()
         }
-
     }
 
-    private fun actualizarHistorial() {
-        val adapter = HistoryAdapter(gameResultList)
+
+    private fun actualizarHistorial(historial: List<GameResult>) {
+        val historialOrdenado = historial.sortedByDescending { it.id }
+
+        val adapter = HistoryAdapter(historialOrdenado)
         binding.recyclerView.adapter = adapter
     }
+
 
     private fun navegarPantallaJuego() {
         val intent = Intent(this, GameActivity::class.java)

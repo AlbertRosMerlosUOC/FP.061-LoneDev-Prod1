@@ -2,16 +2,21 @@ package com.example.producto1
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.producto1.databinding.ActivityGameBinding
+import com.example.producto1.model.GameResult
 import com.example.producto1.model.Player
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.LocalDateTime
+import java.util.Calendar
 import kotlin.random.Random
 
 class GameActivity : AppCompatActivity() {
@@ -100,14 +105,20 @@ class GameActivity : AppCompatActivity() {
                 if (elapsedTime < spinDuration) {
                     handler.postDelayed(this, delay)
                 } else {
-                    checkWin(symbol1, symbol2, symbol3)
-                    // TODO Dejar registro de la partida en GameResult
+                    val gameResult = checkResult(symbol1, symbol2, symbol3)
+                    lifecycleScope.launch {
+                        withContext(Dispatchers.IO) {
+                            if (gameResult != null) {
+                                database.gameResultDao().insertGame(gameResult)
+                            }
+                        }
+                    }
                 }
             }
         })
     }
 
-    private fun checkWin(symbol1: Int, symbol2: Int, symbol3: Int) {
+    private fun checkResult(symbol1: Int, symbol2: Int, symbol3: Int) : GameResult? {
         val symbol1Index = symbols.indexOf(symbol1)
         val symbol2Index = symbols.indexOf(symbol2)
         val symbol3Index = symbols.indexOf(symbol3)
@@ -116,27 +127,34 @@ class GameActivity : AppCompatActivity() {
         val symbol2Name = if (symbol2Index != -1) symbolNames[symbol2Index] else "-1"
         val symbol3Name = if (symbol3Index != -1) symbolNames[symbol3Index] else "-1"
 
+        var resultadoPremio = 0
+
         if (symbol1Name == "s0" && symbol2Name == "s0" && symbol3Name == "s0") {
             jugadorActual?.coins = jugadorActual?.coins?.plus(500) ?: 0
             actualizarTextoResultado(5, "¡Jack-o-Win! Has ganado 500 monedas")
+            resultadoPremio = 500
         }
         else if (symbol1Name == "s6" && symbol2Name == "s6" && symbol3Name == "s6") {
             jugadorActual?.coins = jugadorActual?.coins?.minus(100)?.coerceAtLeast(0) ?: 0
             actualizarTextoResultado(1, "¡La muerte! Has perdido 100 monedas")
+            resultadoPremio = 100
         }
         else if (symbol1Name == symbol2Name && symbol2Name == symbol3Name && symbol1Name != "s0" && symbol1Name != "s6") {
             jugadorActual?.coins = jugadorActual?.coins?.plus(100) ?: 0
             actualizarTextoResultado(4, "¡Triple! Has ganado 100 monedas")
+            resultadoPremio = 100
         }
         else if ((symbol1Name == symbol2Name && symbol1Name != "s6" && symbol2Name != "s6") ||
             (symbol2Name == symbol3Name && symbol2Name != "s6" && symbol3Name != "s6") ||
             (symbol1Name == symbol3Name && symbol1Name != "s6" && symbol3Name != "s6")) {
             jugadorActual?.coins = jugadorActual?.coins?.plus(20) ?: 0
             actualizarTextoResultado(3, "¡Doble! Has ganado 20 monedas")
+            resultadoPremio = 20
         }
         else {
             jugadorActual?.coins = jugadorActual?.coins?.minus(10)?.coerceAtLeast(0) ?: 0
             actualizarTextoResultado(2, "¡Inténtalo de nuevo!")
+            resultadoPremio = -10
         }
 
         if (jugadorActual?.coins == 0) {
@@ -148,6 +166,20 @@ class GameActivity : AppCompatActivity() {
                 }
                 actualizarMonedas()
             }
+        }
+
+        return jugadorActual?.id?.let { playerId ->
+            val calendar = Calendar.getInstance()
+            val currentDateTime = "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(Calendar.YEAR)} " +
+                    "${calendar.get(Calendar.HOUR_OF_DAY)}:${calendar.get(Calendar.MINUTE)}:${calendar.get(Calendar.SECOND)}"
+
+            GameResult( playerId = playerId,
+                        loot = resultadoPremio,
+                        result1 = symbol1Name,
+                        result2 = symbol2Name,
+                        result3 = symbol3Name,
+                        date = currentDateTime
+                      )
         }
     }
 

@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
     private fun cargarJugadores() {
         lifecycleScope.launch {
             jugadores = withContext(Dispatchers.IO) {
-                database.playerDao().getAllPlayers()
+                database.playerDao().getAllPlayers().sortedBy { it.name }
             }
             configurarSpinner()
         }
@@ -97,7 +97,7 @@ class MainActivity : AppCompatActivity() {
                         withContext(Dispatchers.IO) {
                             database.playerDao().insertPlayer(nuevoJugador)
                         }
-                        cargarJugadores() // Recargar jugadores
+                        cargarJugadores()
                         Toast.makeText(this@MainActivity, "Jugador creado", Toast.LENGTH_SHORT).show()
                     } else {
                         Toast.makeText(this@MainActivity, "El jugador ya existe", Toast.LENGTH_SHORT).show()
