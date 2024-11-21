@@ -30,7 +30,6 @@ class HistoryActivity : AppCompatActivity() {
 
         val jugadorId = intent.getIntExtra("jugadorId", -1)
 
-        // Configura un LayoutManager para el RecyclerView
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
 
         lifecycleScope.launch {

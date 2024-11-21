@@ -42,7 +42,6 @@ class HistoryAdapter(private val partidas: List<GameResult>) :
             partida.loot < 0 -> holder.binding.lootTextView.setTextColor(Color.parseColor("#FF5252"))
         }
 
-        // Cargar imágenes en los ImageView usando Glide
         Glide.with(holder.itemView.context)
             .load(resultImageMap[partida.result1])
             .into(holder.binding.result1ImageView)
